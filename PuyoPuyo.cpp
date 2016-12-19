@@ -68,6 +68,10 @@ int main(int args, char *argv[])
 			this->_gameloft_logo = slLoadTexture("image/gameloft_logo.png");
 			this->_puyo_title_logo = slLoadTexture("image/puyo_title_logo.png");
 			this->_logo_time = 0.0;
+
+			this->_vs_com = false;
+
+			this->_title_input_time = 0.0;
 		}
 
 		void run() {
@@ -91,15 +95,52 @@ int main(int args, char *argv[])
 				case status::main_menu: {
 					slSprite(this->_puyo_title_logo, 512, 256, 400, 232);
 
+					slSetFontSize(16);
 					slText(512, 180, "Press Enter to start!");
 
+					slText(512, 150, "1 player");
+					slText(512, 135, "vs COM");
+
+					if (this->_vs_com) {
+						slText(500, 135, ">");
+					} else {
+						slText(500, 150, ">");
+					}
+					
 
 					auto key_enter = slGetKey(SL_KEY_ENTER);
+					auto key_down  = slGetKey(SL_KEY_DOWN);
+					auto key_up    = slGetKey(SL_KEY_UP);
 
 					if (key_enter) {
 						this->_status = status::playing;
 						this->_is_playing = true;
 					}
+
+					this->_title_input_time += slGetDeltaTime();
+
+					if (this->_title_input_time >= 0.15) {
+						this->_title_input_time = 0.0;
+
+						if (key_down) {
+							if (this->_vs_com) {
+								this->_vs_com = false;
+							}
+							else {
+								this->_vs_com = true;
+							}
+						}
+
+						if (key_up) {
+							if (this->_vs_com) {
+								this->_vs_com = false;
+							}
+							else {
+								this->_vs_com = true;
+							}
+						}
+					}
+				
 
 				} break;
 
@@ -158,8 +199,10 @@ int main(int args, char *argv[])
 		std::shared_ptr<board> _com_board;
 
 		bool _is_playing;
-
+		bool _vs_com;
+		
 		double _logo_time;
+		double _title_input_time;
 	};
 
 	app app;

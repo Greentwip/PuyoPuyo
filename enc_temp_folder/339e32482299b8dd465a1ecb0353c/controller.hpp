@@ -47,6 +47,6 @@ class player_controller : public controller {
 
 class ai_controller : public controller {
 	virtual input get_input() override {
-		return input(direction::horizontal, 0, rotation::none);
+		return input(direction::horizontal, -1, rotation::none);
 	}
 };
