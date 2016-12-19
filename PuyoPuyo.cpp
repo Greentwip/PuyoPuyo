@@ -58,15 +58,68 @@ int main(int args, char *argv[])
 			auto player_controller = 
 				std::make_shared<class player_controller>();
 
-			this->_board = 
-				std::make_shared<board>(player_controller);
+			this->_player_board =
+				std::make_shared<board>(257, 256, player_controller);
+
+			this->_is_playing = false;
+
+			this->_status = status::boot;
+
+			this->_gameloft_logo = slLoadTexture("image/gameloft_logo.png");
+			this->_puyo_title_logo = slLoadTexture("image/puyo_title_logo.png");
+			this->_logo_time = 0.0;
 		}
 
 		void run() {
 			while (!slShouldClose() && !slGetKey(SL_KEY_ESCAPE))
 			{
-				this->_board->update();
-				this->_board->render();
+
+				switch (this->_status) {
+				case status::boot:
+					this->_logo_time += slGetDeltaTime();
+
+					if (this->_logo_time >= 4.0) {
+						this->_status = status::main_menu;
+					}
+					else 
+					{
+						slSprite(this->_gameloft_logo, 512, 256, 400, 232);
+					}
+					
+					break;
+
+				case status::main_menu: {
+					slSprite(this->_puyo_title_logo, 512, 256, 400, 232);
+
+					slText(512, 180, "Press Enter to start!");
+
+
+					auto key_enter = slGetKey(SL_KEY_ENTER);
+
+					if (key_enter) {
+						this->_status = status::playing;
+						this->_is_playing = true;
+					}
+
+				} break;
+
+				case status::playing:
+					if (this->_is_playing) {
+						this->_player_board->update();
+						this->_player_board->render();
+
+						/*if (!this->_player_board->is_playing()) {
+							this->_status = status::game_over;
+						}*/
+					}
+					break;
+
+				case status::game_over:
+					break;
+				}
+
+		
+				
 
 				// background glow
 				//slSetForeColor(0.1, 0.9, 0.2, 0.4);
@@ -88,7 +141,25 @@ int main(int args, char *argv[])
 		}
 
 	private:
-		std::shared_ptr<board> _board;
+		enum status {
+			boot, 
+			main_menu, 
+			playing, 
+			game_over
+		};
+
+
+		int _gameloft_logo;
+		int _puyo_title_logo;
+
+		status _status;
+
+		std::shared_ptr<board> _player_board;
+		std::shared_ptr<board> _com_board;
+
+		bool _is_playing;
+
+		double _logo_time;
 	};
 
 	app app;

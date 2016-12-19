@@ -22,7 +22,13 @@ public:
 		post_combo_fall
 	};
 
-	board(std::shared_ptr<controller> controller) {
+	board(uint16_t x, uint16_t y, std::shared_ptr<controller> controller) {
+
+		this->_x = x;
+		this->_y = y;
+
+		this->_score_board_x = x + 191;
+		this->_score_board_y = y;
 
 		this->_controller = controller;
 		this->_current_piece = std::make_shared<piece>(piece::color::red);
@@ -321,7 +327,7 @@ public:
 						piece->position().y == this->_current_piece->secondary()->position().y -
 						this->_current_piece->secondary()->size().height) {
 
-this->_current_piece->secondary()->locked(true);
+						this->_current_piece->secondary()->locked(true);
 					}
 
 					if (this->_current_piece->locked()) {
@@ -559,9 +565,16 @@ this->_current_piece->secondary()->locked(true);
 
 	void render() {
 		slSetForeColor(1.0, 1.0, 1.0, 1.0);
-		slRectangleOutline(257, 256, 512, 511);
-		slRectangleOutline(448, 256, 128, 511);
+		slRectangleOutline(this->_x, this->_y, 512, 511);
+		slRectangleOutline(this->_score_board_x, this->_score_board_y, 128, 511);
 	}
+
+private:
+	uint16_t _x;
+	uint16_t _y;
+
+	uint16_t _score_board_x;
+	uint16_t _score_board_y;
 
 private:
 	uint16_t _game_width; 
