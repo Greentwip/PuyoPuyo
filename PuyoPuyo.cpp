@@ -63,6 +63,8 @@ int main(int args, char *argv[])
 
 			this->_gameloft_logo = slLoadTexture("image/gameloft_logo.png");
 			this->_puyo_title_logo = slLoadTexture("image/puyo_title_logo.png");
+			this->_player_one_wins_logo = slLoadTexture("image/player_one_wins_logo.png");
+			this->_player_two_wins_logo = slLoadTexture("image/player_two_wins_logo.png");
 			this->_logo_time = 0.0;
 
 			this->_vs_com = false;
@@ -142,8 +144,6 @@ int main(int args, char *argv[])
 
 				case status::playing:
 					if (this->_is_playing) {
-
-
 						bool is_game_over = false;
 
 						if(!this->_player_board->is_playing()) {
@@ -175,8 +175,21 @@ int main(int args, char *argv[])
 						if (is_game_over) {
 							this->_game_over_time += slGetDeltaTime();
 
+							if (this->_vs_com) {
+								if (this->_player_board->is_playing()) {
+									slSprite(this->_player_one_wins_logo, 200, 256, 384, 193);
+								}
+								else {
+									slSprite(this->_player_two_wins_logo, 720, 256, 384, 193);
+								}
+							}
+							else {
+
+							}
+
 							if (this->_game_over_time >= 4.0) {
-								this->_status = status::game_over;
+								this->_status = status::main_menu;
+								this->_is_playing = false;
 							}
 							
 						}
@@ -194,13 +207,11 @@ int main(int args, char *argv[])
 								std::make_shared<class ai_controller>();
 							
 							this->_com_board =
-								std::make_shared<board>(513, 256, ai_controller);
+								std::make_shared<board>(767, 256, ai_controller);
 
 						}
 
 						this->_is_playing = true;
-
-
 					}
 					break;
 
@@ -224,6 +235,9 @@ int main(int args, char *argv[])
 
 		int _gameloft_logo;
 		int _puyo_title_logo;
+
+		int _player_one_wins_logo;
+		int _player_two_wins_logo;
 
 		status _status;
 
