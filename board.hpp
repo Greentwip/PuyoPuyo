@@ -72,6 +72,9 @@ public:
 		_post_player_status = combo;
 
 		this->_playing = true;
+
+		this->_score = 0;
+		this->_combo_chain_counter = 0;
 	}
 
 	void move() {
@@ -455,8 +458,8 @@ public:
 
 
 				if(_post_player_status == post_player_status::combo){
-					perform_combo(this->_current_piece);
-					perform_combo(this->_current_piece->secondary());
+					//perform_combo(this->_current_piece);
+					//perform_combo(this->_current_piece->secondary());
 
 					_post_player_status = post_player_status::combo_falling;
 
@@ -499,9 +502,13 @@ public:
 						
 						if (this->_combo_chain.size() < 4) {
 							_post_player_status = post_player_status::post_combo_fall;
+							this->_combo_chain_counter = 0;
 						}
 						else {
 							// count combo chain
+							this->_combo_chain_counter++;
+
+							this->_score += this->_combo_chain_counter * 200;
 						}
 						
 					}
@@ -536,6 +543,11 @@ public:
 	}
 
 	std::vector<piece::color> _next_puyo_colors;
+	uint16_t _combo_chain_counter;
+
+	uint64_t score() {
+		return this->_score;
+	}
 
 	std::vector<piece::color> next_puyo_colors() {
 		return this->_next_puyo_colors;

@@ -43,6 +43,8 @@ class board {
 };*/
 
 #include <iostream>
+#include <string>
+
 #include "board.hpp"
 
 int main(int args, char *argv[])
@@ -234,6 +236,10 @@ int main(int args, char *argv[])
 
 					slText(257 + 163, 256, "Score:");
 
+					auto score = this->_player_board->score();
+					
+					slText(257 + 163, 256 - 32, std::to_string(score).c_str());
+
 					if (this->_vs_com) {
 						slText(767 + 163, 440, "Next:");
 						next_puyo_colors = this->_com_board->next_puyo_colors();
@@ -243,6 +249,9 @@ int main(int args, char *argv[])
 
 						slSetForeColor(1.0, 1.0, 1.0, 1.0);
 						slText(767 + 163, 256, "Score:");
+
+						score = this->_com_board->score();
+						slText(767 + 163, 256 - 32, std::to_string(score).c_str());
 					}
 				}
 					break;
