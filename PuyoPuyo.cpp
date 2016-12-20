@@ -111,7 +111,6 @@ int main(int args, char *argv[])
 
 					if (key_enter) {
 						this->_status = status::playing;
-						this->_is_playing = true;
 					}
 
 					this->_title_input_time += slGetDeltaTime();
