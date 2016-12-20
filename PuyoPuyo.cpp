@@ -84,11 +84,11 @@ int main(int args, char *argv[])
 					if (this->_logo_time >= 4.0) {
 						this->_status = status::main_menu;
 					}
-					else 
+					else
 					{
 						slSprite(this->_gameloft_logo, 512, 256, 400, 232);
 					}
-					
+
 					break;
 
 				case status::main_menu: {
@@ -102,14 +102,15 @@ int main(int args, char *argv[])
 
 					if (this->_vs_com) {
 						slText(500, 135, ">");
-					} else {
+					}
+					else {
 						slText(500, 150, ">");
 					}
-					
+
 
 					auto key_enter = slGetKey(SL_KEY_ENTER);
-					auto key_down  = slGetKey(SL_KEY_DOWN);
-					auto key_up    = slGetKey(SL_KEY_UP);
+					auto key_down = slGetKey(SL_KEY_DOWN);
+					auto key_up = slGetKey(SL_KEY_UP);
 
 					if (key_enter) {
 						this->_status = status::playing;
@@ -138,19 +139,20 @@ int main(int args, char *argv[])
 							}
 						}
 					}
-				
+
 
 				} break;
 
-				case status::playing:
+				case status::playing:{
 					if (this->_is_playing) {
 						bool is_game_over = false;
 
-						if(!this->_player_board->is_playing()) {
+						if (!this->_player_board->is_playing()) {
 
 							is_game_over = true;
-													
-						} else {
+
+						}
+						else {
 
 							if (this->_vs_com) {
 								if (!this->_com_board->is_playing()) {
@@ -190,8 +192,10 @@ int main(int args, char *argv[])
 							if (this->_game_over_time >= 4.0) {
 								this->_status = status::main_menu;
 								this->_is_playing = false;
+
+								this->_game_over_time = 0;
 							}
-							
+
 						}
 					}
 					else {
@@ -205,7 +209,7 @@ int main(int args, char *argv[])
 						if (this->_vs_com) {
 							auto ai_controller =
 								std::make_shared<class ai_controller>();
-							
+
 							this->_com_board =
 								std::make_shared<board>(767, 256, ai_controller);
 
@@ -213,6 +217,34 @@ int main(int args, char *argv[])
 
 						this->_is_playing = true;
 					}
+
+
+
+					slSetFontSize(16);
+					slSetForeColor(1.0, 1.0, 1.0, 1.0);
+
+					slText(257 + 163, 440, "Next:");
+
+					auto next_puyo_colors = this->_player_board->next_puyo_colors();
+
+					fill_with_color(257 + 163 + 24, 432 - 16, next_puyo_colors[0]);
+					fill_with_color(257 + 163 + 24, 400 - 16, next_puyo_colors[1]);
+
+					slSetForeColor(1.0, 1.0, 1.0, 1.0);
+
+					slText(257 + 163, 256, "Score:");
+
+					if (this->_vs_com) {
+						slText(767 + 163, 440, "Next:");
+						next_puyo_colors = this->_com_board->next_puyo_colors();
+
+						fill_with_color(767 + 163 + 24, 432 - 16, next_puyo_colors[0]);
+						fill_with_color(767 + 163 + 24, 400 - 16, next_puyo_colors[1]);
+
+						slSetForeColor(1.0, 1.0, 1.0, 1.0);
+						slText(767 + 163, 256, "Score:");
+					}
+				}
 					break;
 
 				case status::game_over:
@@ -224,6 +256,28 @@ int main(int args, char *argv[])
 			slClose(); //close the window and shut down SIGIL
 		}
 
+
+		void fill_with_color(uint16_t x, uint16_t y, piece::color color) {
+			switch (color) {
+			case piece::color::red:
+				slSetForeColor(1.0, 0.0, 0.0, 1.0);
+				break;
+
+			case piece::color::green:
+				slSetForeColor(0.0, 1.0, 0.0, 1.0);
+				break;
+
+			case piece::color::blue:
+				slSetForeColor(0.0, 0.0, 1.0, 1.0);
+				break;
+
+			case piece::color::purple:
+				slSetForeColor(1.0, 0.0, 1.0, 1.0);
+				break;
+			}
+
+			slRectangleFill(x, y, 32, 32);
+		}
 	private:
 		enum status {
 			boot, 

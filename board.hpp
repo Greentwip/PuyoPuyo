@@ -31,9 +31,29 @@ public:
 		this->_score_board_y = y;
 
 		this->_controller = controller;
-		this->_current_piece = std::make_shared<piece>(this->_x - 81, 
-													   this->_y + 240, 
-													   piece::color::red);
+
+		this->_next_puyo_colors.push_back(piece::color::red);
+		this->_next_puyo_colors.push_back(piece::color::purple);
+
+		std::uniform_int_distribution<int> distribution(0, 3);
+		int dice_roll_a = distribution(generator);
+		int dice_roll_b = distribution(generator);
+
+		this->_next_puyo_colors[0] = piece::color(dice_roll_a);
+		this->_next_puyo_colors[1] = piece::color(dice_roll_b);
+
+
+		this->_current_piece = std::make_shared<piece>(this->_x - 81,
+													   this->_y + 240,
+													   this->_next_puyo_colors[0],
+													   this->_next_puyo_colors[1]);
+
+		dice_roll_a = distribution(generator);
+		dice_roll_b = distribution(generator);
+
+		this->_next_puyo_colors[0] = piece::color(dice_roll_a);
+		this->_next_puyo_colors[1] = piece::color(dice_roll_b);
+
 		this->_pieces.push_back(this->_current_piece);
 		this->_pieces.push_back(this->_current_piece->secondary());
 
@@ -493,8 +513,12 @@ public:
 					
 					this->_current_piece = std::make_shared<piece>(this->_x - 81,
 																   this->_y + 240,
-																   piece::color(dice_roll_a),
-																   piece::color(dice_roll_b));
+																   this->_next_puyo_colors[0],
+																   this->_next_puyo_colors[1]);
+
+					this->_next_puyo_colors[0] = piece::color(dice_roll_a);
+					this->_next_puyo_colors[1] = piece::color(dice_roll_b);
+
 					this->_pieces.push_back(this->_current_piece);
 					this->_pieces.push_back(this->_current_piece->secondary());
 
@@ -504,10 +528,17 @@ public:
 			}
 		}
 
+
 		for (auto& piece : this->_pieces) {
 			piece->render();
 		}
 
+	}
+
+	std::vector<piece::color> _next_puyo_colors;
+
+	std::vector<piece::color> next_puyo_colors() {
+		return this->_next_puyo_colors;
 	}
 
 	bool is_playing() {
