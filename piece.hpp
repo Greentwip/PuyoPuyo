@@ -13,19 +13,20 @@ public:
 		normal
 	};
 
-	piece(const color& primary_color, 
+	piece(uint16_t x, uint16_t y, 
+		  const color& primary_color, 
 		  const color& secondary_color = color::purple,
 		  bool is_primary = true): _is_primary(is_primary), _is_locked(false), _visited(false) {
-		this->_x = 176;
-		this->_y = 496;
+		this->_x = x;
+		this->_y = y;
 		this->_width = 32;
 		this->_height = 32;
 
 		this->_color = primary_color;
 
 		if (this->_is_primary) {
-			this->_secondary = std::make_shared<piece>(secondary_color, secondary_color, false);
-			this->_secondary->position(176, 464);
+			this->_secondary = std::make_shared<piece>(x, y, secondary_color, secondary_color, false);
+			this->_secondary->position(x, y - 32);
 		}
 		
 	}

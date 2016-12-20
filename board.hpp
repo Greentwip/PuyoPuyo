@@ -31,7 +31,9 @@ public:
 		this->_score_board_y = y;
 
 		this->_controller = controller;
-		this->_current_piece = std::make_shared<piece>(piece::color::red);
+		this->_current_piece = std::make_shared<piece>(this->_x - 81, 
+													   this->_y + 240, 
+													   piece::color::red);
 		this->_pieces.push_back(this->_current_piece);
 		this->_pieces.push_back(this->_current_piece->secondary());
 
@@ -425,8 +427,8 @@ public:
 		else
 		{
 			// new piece, player combo and game over
-			if (this->_current_piece->position().x == 176 &&
-				this->_current_piece->position().y == 496) {
+			if (this->_current_piece->position().x == this->_x - 81 &&
+				this->_current_piece->position().y == this->_y + 240) {
 				this->_playing = false;
 			}
 			else {
@@ -488,9 +490,11 @@ public:
 					std::uniform_int_distribution<int> distribution(0, 3);
 					int dice_roll_a = distribution(generator);
 					int dice_roll_b = distribution(generator);
-
-					this->_current_piece = std::make_shared<piece>(piece::color(dice_roll_a),
-						piece::color(dice_roll_b));
+					
+					this->_current_piece = std::make_shared<piece>(this->_x - 81,
+																   this->_y + 240,
+																   piece::color(dice_roll_a),
+																   piece::color(dice_roll_b));
 					this->_pieces.push_back(this->_current_piece);
 					this->_pieces.push_back(this->_current_piece->secondary());
 
@@ -506,6 +510,9 @@ public:
 
 	}
 
+	bool is_playing() {
+		return this->_playing;
+	}
 
 	void perform_combo(std::shared_ptr<piece> combo_piece) {
 		this->_combo_chain.clear();

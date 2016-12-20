@@ -55,11 +55,7 @@ int main(int args, char *argv[])
 			slSetFont(slLoadFont("ttf/white_rabbit.ttf"), 16);
 			slSetTextAlign(SL_ALIGN_LEFT);
 
-			auto player_controller = 
-				std::make_shared<class player_controller>();
-
-			this->_player_board =
-				std::make_shared<board>(257, 256, player_controller);
+			
 
 			this->_is_playing = false;
 
@@ -72,6 +68,7 @@ int main(int args, char *argv[])
 			this->_vs_com = false;
 
 			this->_title_input_time = 0.0;
+			this->_game_over_time = 0.0;
 		}
 
 		void run() {
@@ -146,12 +143,65 @@ int main(int args, char *argv[])
 
 				case status::playing:
 					if (this->_is_playing) {
-						this->_player_board->update();
+
+
+						bool is_game_over = false;
+
+						if(!this->_player_board->is_playing()) {
+
+							is_game_over = true;
+													
+						} else {
+
+							if (this->_vs_com) {
+								if (!this->_com_board->is_playing()) {
+									is_game_over = true;
+								}
+								else {
+									this->_player_board->update();
+									this->_com_board->update();
+								}
+							}
+							else {
+								this->_player_board->update();
+							}
+						}
+
 						this->_player_board->render();
 
-						/*if (!this->_player_board->is_playing()) {
-							this->_status = status::game_over;
-						}*/
+						if (this->_vs_com) {
+							this->_com_board->render();
+						}
+
+						if (is_game_over) {
+							this->_game_over_time += slGetDeltaTime();
+
+							if (this->_game_over_time >= 4.0) {
+								this->_status = status::game_over;
+							}
+							
+						}
+					}
+					else {
+
+						auto player_controller =
+							std::make_shared<class player_controller>();
+
+						this->_player_board =
+							std::make_shared<board>(257, 256, player_controller);
+
+						if (this->_vs_com) {
+							auto ai_controller =
+								std::make_shared<class ai_controller>();
+							
+							this->_com_board =
+								std::make_shared<board>(513, 256, ai_controller);
+
+						}
+
+						this->_is_playing = true;
+
+
 					}
 					break;
 
@@ -159,23 +209,6 @@ int main(int args, char *argv[])
 					break;
 				}
 
-		
-				
-
-				// background glow
-				//slSetForeColor(0.1, 0.9, 0.2, 0.4);
-				//slSprite(tex, 200, 240, 300, 200);
-
-				/*			// large text and fat line
-				slSetForeColor(0.0, 0.8, 0.2, 1.0);
-				slSetFontSize(24);
-				slText(200, 250, "SIGIL:");
-				slRectangleFill(200, 240, 100, 7);
-
-				// smaller subtext
-				slSetFontSize(14);
-				slText(200, 220, "Sprites, text, sound, input, and more!");
-				slLine(48, 210, 352, 210);*/
 				slRender();	// draw everything
 			}
 			slClose(); //close the window and shut down SIGIL
@@ -203,6 +236,8 @@ int main(int args, char *argv[])
 		
 		double _logo_time;
 		double _title_input_time;
+		double _game_over_time;
+		double _rematch_time;
 	};
 
 	app app;
